@@ -24,22 +24,26 @@ template<typename T> void printElement(T t, const int& width, const char& separa
  * @param src: The source node
 */
 void adjMatrix::dijkstra(int src) {
+    // Validate the source node
     if (src < 0 || src >= this->V) {
         cerr << "Not a valid node ID for source\n";
         return;
     }
     
+    // Distance array; keeping track of the distance from the source node  
     int dist[this->V];
     fill(dist, dist+this->V, INT_MAX);
     dist[src] = 0;
 
+    // Visited array; keeping track of whether the node is visited or not 
     bool vis[this->V];
     fill(vis, vis+this->V, false);
 
-    dist[src] = 0;
+    // Initualize the priority queue (min heap based on the edge weight) 
     std::priority_queue<intPair, vector<intPair>, std::greater<intPair>> pq
         = std::priority_queue<intPair, vector<intPair>, std::greater<intPair>>();
 
+    // Previous array: keeping track of what node comes before in the shortest path
     int prev[this->V];
     fill(prev, prev+this->V, -1);
 
@@ -48,14 +52,16 @@ void adjMatrix::dijkstra(int src) {
         auto curr = pq.top();
         pq.pop();
 
+        // Extract the current node
         int u = curr.second;
-
         vis[u] = true;
 
+        // Iterate through every neighboring nodes 
         for (int v=0; v<this->V; ++v) {
             if (this->adj[u][v] == -1 || vis[v])
                 continue;
 
+            // If the new distance is smaller than the current recorded distance --> Update the smallest edge and the path
             int tmp = dist[u] + this->adj[u][v];
             if (tmp < dist[v]) {
                 dist[v] = tmp;
@@ -86,6 +92,7 @@ void adjMatrix::dijkstra(int src) {
  * Based on Floyd-Warshall's Algorithm
 */
 void adjMatrix::floyd_warshall() {
+    // Creating a new 2D matrix copy of the graph; replacing -1 with INT_MAX to make the algorithm work
     vector<vector<int>> dist(this->adj);
     for (int i=0; i<this->V; ++i) {
         for (int j=0; j<this->V; ++j) {
@@ -96,14 +103,19 @@ void adjMatrix::floyd_warshall() {
         }
     }
 
+    // Previous path; same purpose as the previous array from Djikstra's, but in a 2D matrix
     int path[this->V][this->V];
     for (int i=0; i<this->V; ++i)
         for (int j=0; j<this->V; ++j)
             path[i][j] = (dist[i][j] == INT_MAX || dist[i][j] == 0) ? INT_MAX : j;
  
+    // Looping through every middle nodes
     for (int i=0; i<this->V; ++i)
+        // Looping through every start node
         for (int s=0; s<this->V; ++s)
+            //Looping through every end node 
             for (int e=0; e<this->V; ++e)
+                // Update the shortest path 
                 if (
                     dist[s][i] != INT_MAX && 
                     dist[i][e] != INT_MAX &&
@@ -113,6 +125,7 @@ void adjMatrix::floyd_warshall() {
                     path[s][e] = i; 
                 }
 
+    // Return the INT_MAX to -1 for printing
     for (int i=0; i<this->V; ++i)
         for (int j=0; j<this->V; ++j) {
             if (dist[i][j] == INT_MAX)
@@ -156,22 +169,27 @@ void adjMatrix::floyd_warshall() {
  * @param src: The source node of the MST
 */
 void adjMatrix::prim(int src) {
+    // Validate the source node 
     if (src < 0 || src >= this->V) {
         cerr << "Not a valid node ID for source\n";
         return;
     }
     
+    // Visited array; keeping track of what node has already in the tree
     bool vis[this->V];
     fill(vis, vis+V, false);
 
+    // Distance array: keeping track of the smallest edge connecting to the end node
     int dist[this->V];
     fill(dist, dist+this->V, INT_MAX);
 
+    // Previous array: keeping track of the node connecting to the other node with the smallest edge
     int prev[this->V];
     fill(prev, prev+this->V, -1);
 
     dist[src] = 0;
 
+    // Initialize the priority queue (min heap)
     std::priority_queue<intPair, vector<intPair>, std::greater<intPair>> pq
         = std::priority_queue<intPair, vector<intPair>, std::greater<intPair>>();
 
@@ -180,12 +198,17 @@ void adjMatrix::prim(int src) {
         auto curr = pq.top();
         pq.pop();
 
+        // Extract the current assessing node; mark it as part of the tree
         int u=curr.second;
         vis[u]=true;
 
+        // Iterate through its neighbors 
         for (int v=0; v<this->V; ++v) {
+            // Not a neighbor
             if (this->adj[u][v] == -1)
                 continue;
+
+            // If the neighbor is not part of the tree and the edge is smaller than the current recorded distance --> Join them
             if (!vis[v] && dist[v] > this->adj[u][v]) {
                 dist[v] = this->adj[u][v];
                 pq.push({dist[v], v});
