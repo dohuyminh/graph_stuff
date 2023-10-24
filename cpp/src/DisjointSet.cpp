@@ -1,4 +1,4 @@
-#include "DisjointSet.h"
+#include "../include/DisjointSet.h"
 
 #include <algorithm>
 

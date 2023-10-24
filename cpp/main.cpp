@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "algo/AdjMatrix.h"
+#include "include/AdjMatrix.h"
 
 int main(int argc, char** argv) {
     

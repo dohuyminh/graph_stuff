@@ -1,5 +1,5 @@
-#include "AdjMatrix.h"
-#include "DisjointSet.h"
+#include "../include/AdjMatrix.h"
+#include "../include/DisjointSet.h"
 
 #include <climits>
 #include <iostream>
