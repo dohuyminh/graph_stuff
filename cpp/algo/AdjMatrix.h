@@ -12,6 +12,7 @@ using std::vector;
 class adjMatrix {
 private:
     vector<vector<int>> adj;
+    bool ValidateUndirected(vector<vector<int>>* adj);
 
 public:
     int V;
@@ -22,16 +23,7 @@ public:
      * Creating a new Adjajency Matrix
      * @param adj: The adjacency matrix 
     */
-    adjMatrix(vector<vector<int>>& adj) {
-        this->adj = adj;
-        this->V = adj.size();
-        this->E = 0;
-
-        for (auto arc: this->adj)
-            for (int v: arc)
-                if (v != -1)
-                    ++this->E;
-    }
+    adjMatrix(vector<vector<int>>* adj);
 
     // Find the shortest path
     void dijkstra(int src);

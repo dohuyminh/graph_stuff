@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "algo/matrix.h"
+#include "algo/AdjMatrix.h"
 
 int main(int argc, char** argv) {
     
@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
         { -1,  -1,  -1,  -1,   6,   2,  -1 } 
     };
 
-    adjMatrix* mat = new adjMatrix(matrix);
+    adjMatrix* mat = new adjMatrix(&matrix);
 
     mat->kruskal();
 

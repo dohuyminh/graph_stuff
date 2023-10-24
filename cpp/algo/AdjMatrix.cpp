@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "AdjMatrix.h"
 #include "DisjointSet.h"
 
 #include <climits>
@@ -15,6 +15,31 @@ typedef std::tuple<int, int, int> intTup;
 
 template<typename T> void printElement(T t, const int& width, const char& separator) {
     cout << std::right << setw(width) << setfill(separator) << t;
+}
+
+bool adjMatrix::ValidateUndirected(vector<vector<int>>* adj) {
+    int V=adj->size();
+    for (int i=0; i<V; ++i) 
+        for (int j=i; j<V; ++j)
+            if ((*adj)[i][j] != (*adj)[j][i])
+                return false;
+    return true;
+}
+
+adjMatrix::adjMatrix(vector<vector<int>>* adj) {
+    if (!ValidateUndirected(adj)) {
+        cerr << "The adjajency matrix is not a representation of an undirected graph\n";
+        exit(-1);
+    }
+
+    this->adj = *adj;
+    this->V = this->adj.size();
+    this->E = 0;
+    for (const auto& row: this->adj)
+        for (const int& n: row)
+            if (n != -1)
+                ++this->E;
+    this->E /= 2;
 }
 
 /**
