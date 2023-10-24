@@ -11,7 +11,6 @@ class Matrix {
 protected:
     std::vector<std::vector<int>> adj;
     int V, E;
-    virtual bool validateGraph() = 0;
     virtual ~Matrix() {};
 
 public:
