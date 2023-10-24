@@ -1,4 +1,4 @@
-#include "../include/AdjMatrix.h"
+#include "../include/UndirectedGraph.h"
 #include "../include/DisjointSet.h"
 
 #include <climits>
@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <iomanip>
 
-using std::cout, std::cerr, std::cin, std::fill, std::setw, std::setfill;
+using std::cout, std::cerr, std::cin, std::fill, std::setw, std::setfill, std::vector;
 
 typedef std::pair<int, int> intPair;
 typedef std::tuple<int, int, int> intTup;
@@ -17,28 +17,20 @@ template<typename T> void printElement(T t, const int& width, const char& separa
     cout << std::right << setw(width) << setfill(separator) << t;
 }
 
-bool adjMatrix::ValidateUndirected(vector<vector<int>>* adj) {
-    int V=adj->size();
+bool UndirectedGraph::validateGraph() {
+    int V=this->adj.size();
     for (int i=0; i<V; ++i) 
         for (int j=i; j<V; ++j)
-            if ((*adj)[i][j] != (*adj)[j][i])
+            if (this->adj[i][j] != this->adj[j][i])
                 return false;
     return true;
 }
 
-adjMatrix::adjMatrix(vector<vector<int>>* adj) {
-    if (!ValidateUndirected(adj)) {
+UndirectedGraph::UndirectedGraph(vector<vector<int>>* adj) : Matrix(adj) {
+    if (!validateGraph()) {
         cerr << "The adjajency matrix is not a representation of an undirected graph\n";
         exit(-1);
     }
-
-    this->adj = *adj;
-    this->V = this->adj.size();
-    this->E = 0;
-    for (const auto& row: this->adj)
-        for (const int& n: row)
-            if (n != -1)
-                ++this->E;
     this->E /= 2;
 }
 
@@ -48,7 +40,7 @@ adjMatrix::adjMatrix(vector<vector<int>>* adj) {
  * Dijkstra's Algorithm
  * @param src: The source node
 */
-void adjMatrix::dijkstra(int src) {
+void UndirectedGraph::dijkstra(int src) {
     // Validate the source node
     if (src < 0 || src >= this->V) {
         cerr << "Not a valid node ID for source\n";
@@ -116,7 +108,7 @@ void adjMatrix::dijkstra(int src) {
  * Gives the tables of the shortest paths from all nodes to all other nodes
  * Based on Floyd-Warshall's Algorithm
 */
-void adjMatrix::floyd_warshall() {
+void UndirectedGraph::floyd_warshall() {
     // Creating a new 2D matrix copy of the graph; replacing -1 with INT_MAX to make the algorithm work
     vector<vector<int>> dist(this->adj);
     for (int i=0; i<this->V; ++i) {
@@ -193,7 +185,7 @@ void adjMatrix::floyd_warshall() {
  * This will print out a table containing the edges needed to construct the Minimum Spanning Tree
  * @param src: The source node of the MST
 */
-void adjMatrix::prim(int src) {
+void UndirectedGraph::prim(int src) {
     // Validate the source node 
     if (src < 0 || src >= this->V) {
         cerr << "Not a valid node ID for source\n";
@@ -266,7 +258,7 @@ void adjMatrix::prim(int src) {
  * Gives all the edges needed to construct a Minimum Spanning Tree
  * Using Kruskal's Algorithm
 */
-void adjMatrix::kruskal() { 
+void UndirectedGraph::kruskal() { 
     vector<intTup> Edges = vector<intTup>();
     
     // Collect all the valid edges

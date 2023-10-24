@@ -1,10 +1,12 @@
 #include <iostream>
+#include <vector>
 
-#include "include/AdjMatrix.h"
+#include "include/Matrix.h"
+#include "include/UndirectedGraph.h"
 
 int main(int argc, char** argv) {
     
-    vector<vector<int>> matrix = {
+    std::vector<std::vector<int>> matrix = {
         { -1,   4,   8,  -1,  -1,  -1,  -1 }, 
         {  4,  -1,   9,   8,  10,  -1,  -1 }, 
         {  8,   9,  -1,   2,  -1,   1,  -1 }, 
@@ -14,7 +16,7 @@ int main(int argc, char** argv) {
         { -1,  -1,  -1,  -1,   6,   2,  -1 } 
     };
 
-    adjMatrix* mat = new adjMatrix(&matrix);
+   UndirectedGraph* mat = new UndirectedGraph(&matrix);
 
     mat->kruskal();
 
