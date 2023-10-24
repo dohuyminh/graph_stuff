@@ -3,6 +3,10 @@
 
 #include <vector>
 
+/**
+ * Class: Matrix
+ * The abstract class representing the adjacency matrix representation of a graph
+*/
 class Matrix {
 protected:
     std::vector<std::vector<int>> adj;

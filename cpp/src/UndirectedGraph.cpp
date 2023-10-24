@@ -17,6 +17,10 @@ template<typename T> void printElement(T t, const int& width, const char& separa
     cout << std::right << setw(width) << setfill(separator) << t;
 }
 
+/**
+ * METHOD: UndirectedGraph::validateGraph
+ * @return if the graph is an undirected graph or not 
+*/
 bool UndirectedGraph::validateGraph() {
     int V=this->adj.size();
     for (int i=0; i<V; ++i) 
@@ -26,6 +30,10 @@ bool UndirectedGraph::validateGraph() {
     return true;
 }
 
+/**
+ * METHOD: Constructor
+ * Create an instance of an adjajency matrix 
+*/
 UndirectedGraph::UndirectedGraph(vector<vector<int>>* adj) : Matrix(adj) {
     if (!validateGraph()) {
         cerr << "The adjajency matrix is not a representation of an undirected graph\n";

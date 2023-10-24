@@ -2,7 +2,6 @@
 #define ADJ_MATRIX_H_
 
 #include "Matrix.h"
-#include <vector>
 
 /**
  * Class: UndirectedGraph

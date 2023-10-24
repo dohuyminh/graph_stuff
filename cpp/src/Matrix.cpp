@@ -1,5 +1,10 @@
 #include "../include/Matrix.h"
 
+/**
+ * METHOD: Constructor
+ * Create a new instance of a new adjacency matrix 
+ * @param adj: The adjajency matrix
+*/
 Matrix::Matrix(std::vector<std::vector<int>>* adj) {
     this->adj = *adj;
     this->V = adj->size();
