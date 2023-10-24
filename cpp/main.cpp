@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "include/Matrix.h"
 #include "include/UndirectedGraph.h"
@@ -7,20 +8,24 @@
 int main(int argc, char** argv) {
     
     std::vector<std::vector<int>> matrix = {
-        { -1,   4,   8,  -1,  -1,  -1,  -1 }, 
-        {  4,  -1,   9,   8,  10,  -1,  -1 }, 
-        {  8,   9,  -1,   2,  -1,   1,  -1 }, 
-        { -1,   8,   2,  -1,   7,   9,  -1 }, 
-        { -1,  10,  -1,   7,  -1,   5,   6 }, 
-        { -1,  -1,   1,   9,   5,  -1,   2 }, 
-        { -1,  -1,  -1,  -1,   6,   2,  -1 } 
+        {  0,   4,   8,   0,   0,   0,   0 }, 
+        {  4,   0,   9,   8,  10,   0,   0 }, 
+        {  8,   9,   0,   2,   0,   1,   0 }, 
+        {  0,   8,   2,   0,   7,   9,   0 }, 
+        {  0,  10,   0,   7,   0,   5,   6 }, 
+        {  0,   0,   1,   9,   5,   0,   2 }, 
+        {  0,   0,   0,   0,   6,   2,   0 } 
     };
 
-   UndirectedGraph* mat = new UndirectedGraph(&matrix);
+    std::unique_ptr<UndirectedGraph> mat;
 
-    mat->kruskal();
-
-    delete mat;
+    try {
+        mat = std::make_unique<UndirectedGraph>(&matrix);
+        mat->kruskal();
+    } catch(std::logic_error const& e) {
+        std::cout << e.what();
+        exit(-1);
+    }
 
     return 0;
 }

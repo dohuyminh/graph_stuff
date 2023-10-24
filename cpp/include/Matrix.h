@@ -11,6 +11,8 @@ class Matrix {
 protected:
     std::vector<std::vector<int>> adj;
     int V, E;
+    static const int NO_EDGE;
+    void graphSpecs();
     virtual ~Matrix() {};
 
 public:

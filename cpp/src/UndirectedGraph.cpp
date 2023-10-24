@@ -1,3 +1,4 @@
+#include "../include/Matrix.h"
 #include "../include/UndirectedGraph.h"
 #include "../include/DisjointSet.h"
 
@@ -7,6 +8,7 @@
 #include <utility>
 #include <algorithm>
 #include <iomanip>
+#include <exception>
 
 using std::cout, std::cerr, std::cin, std::fill, std::setw, std::setfill, std::vector;
 
@@ -35,9 +37,9 @@ bool UndirectedGraph::validateGraph() {
  * Create an instance of an adjajency matrix 
 */
 UndirectedGraph::UndirectedGraph(vector<vector<int>>* adj) : Matrix(adj) {
+    // Check if the graph is actually undirected or not; if not, then delete the adjacency matrix and throw an exception
     if (!validateGraph()) {
-        cerr << "The adjajency matrix is not a representation of an undirected graph\n";
-        exit(-1);
+        throw std::logic_error("The adjajency matrix is not a representation of an undirected graph\n");
     }
     this->E /= 2;
 }
@@ -70,7 +72,7 @@ void UndirectedGraph::dijkstra(int src) {
 
     // Previous array: keeping track of what node comes before in the shortest path
     int prev[this->V];
-    fill(prev, prev+this->V, -1);
+    fill(prev, prev+this->V, Matrix::NO_EDGE);
 
     pq.push({0, src});
     while (!pq.empty()) {
@@ -83,7 +85,7 @@ void UndirectedGraph::dijkstra(int src) {
 
         // Iterate through every neighboring nodes 
         for (int v=0; v<this->V; ++v) {
-            if (this->adj[u][v] == -1 || vis[v])
+            if (this->adj[u][v] == Matrix::NO_EDGE || vis[v])
                 continue;
 
             // If the new distance is smaller than the current recorded distance --> Update the smallest edge and the path
@@ -96,6 +98,7 @@ void UndirectedGraph::dijkstra(int src) {
         }
     }
 
+    this->graphSpecs();
     cout << "Performing Dijkstra's Algorithm on the graph gives:\n";
     int idWidth = 7, distWidth = 8, prevWidth = 8;
     char seperator = ' ';
@@ -117,11 +120,11 @@ void UndirectedGraph::dijkstra(int src) {
  * Based on Floyd-Warshall's Algorithm
 */
 void UndirectedGraph::floyd_warshall() {
-    // Creating a new 2D matrix copy of the graph; replacing -1 with INT_MAX to make the algorithm work
+    // Creating a new 2D matrix copy of the graph; replacing Matrix::NO_EDGE with INT_MAX to make the algorithm work
     vector<vector<int>> dist(this->adj);
     for (int i=0; i<this->V; ++i) {
         for (int j=0; j<this->V; ++j) {
-            if (dist[i][j] == -1)
+            if (dist[i][j] == Matrix::NO_EDGE)
                 dist[i][j] = INT_MAX;
             if (i == j)
                 dist[i][j] = 0;
@@ -150,15 +153,16 @@ void UndirectedGraph::floyd_warshall() {
                     path[s][e] = i; 
                 }
 
-    // Return the INT_MAX to -1 for printing
+    // Return the INT_MAX to Matrix::NO_EDGE for printing
     for (int i=0; i<this->V; ++i)
         for (int j=0; j<this->V; ++j) {
             if (dist[i][j] == INT_MAX)
-                dist[i][j] = -1;    
+                dist[i][j] = Matrix::NO_EDGE;    
             if (path[i][j] == INT_MAX)
-                path[i][j] = -1;
+                path[i][j] = Matrix::NO_EDGE;
         }
 
+    this->graphSpecs();
     cout << "Performing Floyd-Warshall's Algorithm on the graph gives:\n";
     cout << "Minimum distance from source to destination node:\n";
     cout << "   From:  ";
@@ -210,7 +214,8 @@ void UndirectedGraph::prim(int src) {
 
     // Previous array: keeping track of the node connecting to the other node with the smallest edge
     int prev[this->V];
-    fill(prev, prev+this->V, -1);
+    fill(prev, prev+this->V, Matrix::NO_EDGE);
+    prev[src] = -1;
 
     dist[src] = 0;
 
@@ -230,7 +235,7 @@ void UndirectedGraph::prim(int src) {
         // Iterate through its neighbors 
         for (int v=0; v<this->V; ++v) {
             // Not a neighbor
-            if (this->adj[u][v] == -1)
+            if (this->adj[u][v] == Matrix::NO_EDGE)
                 continue;
 
             // If the neighbor is not part of the tree and the edge is smaller than the current recorded distance --> Join them
@@ -242,6 +247,7 @@ void UndirectedGraph::prim(int src) {
         }        
     }
 
+    this->graphSpecs();
     int density = 0;
     cout << "Performing Prim's Algorithm on the graph gives the Minimum Spanning Tree:\n";
     int idWidth = 7, distWidth = 8, prevWidth = 8;
@@ -252,7 +258,7 @@ void UndirectedGraph::prim(int src) {
         cout << "      ";
         printElement(dist[i], distWidth, seperator);
         cout << "      ";
-        if (dist[i] != -1)
+        if (dist[i] != Matrix::NO_EDGE)
             density += dist[i];
         printElement(prev[i], prevWidth, seperator);
         cout << '\n';
@@ -272,7 +278,7 @@ void UndirectedGraph::kruskal() {
     // Collect all the valid edges
     for (int i=0; i<this->V; ++i)
         for (int j=i+1; j<this->V; ++j)
-            if (this->adj[i][j] != -1)
+            if (this->adj[i][j] != Matrix::NO_EDGE)
                 Edges.push_back({this->adj[i][j], i, j});
 
     // Sort the edges by weight
@@ -284,7 +290,7 @@ void UndirectedGraph::kruskal() {
     // MST Density
     int density = 0;
 
-
+    this->graphSpecs();
     cout << "Performing Kruskal's Algorithm on the graph gives the following Minimum Spanning Tree:\n";
 
     // Looping through all the edges
@@ -321,4 +327,6 @@ void UndirectedGraph::kruskal() {
     }
 
     cout << "Density: " << density << '\n';
+
+    delete S;
 }
