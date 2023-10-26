@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include <vector>
 
 /**
  * TODO: Implement the adjacency matrix representation of
@@ -6,8 +7,12 @@
 */
 class DirectedGraph : public Matrix {
 private:
-    bool isAcyclic();
+    bool HasNoCycles();
+    bool validateGraph() override;
 
 public:
-    void toposort();
+    bool isAcyclic;
+
+    DirectedGraph(std::vector<std::vector<int>>* adj);
+    std::vector<int> toposort(bool print_out);
 };

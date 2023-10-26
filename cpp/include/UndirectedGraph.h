@@ -10,7 +10,7 @@
 */
 class UndirectedGraph : public Matrix {
 private:
-    bool validateGraph();
+    bool validateGraph() override;
 
 public:
     /**

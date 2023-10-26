@@ -1,4 +1,5 @@
-#include "../include/Matrix.h"
+/* --------------------- HEADER FILES INCLUDES --------------------- */
+
 #include "../include/UndirectedGraph.h"
 #include "../include/DisjointSet.h"
 
@@ -10,6 +11,8 @@
 #include <iomanip>
 #include <exception>
 
+/* --------------------- NAMESPACES & TEMPLATES --------------------- */
+
 using std::cout, std::cerr, std::cin, std::fill, std::setw, std::setfill, std::vector;
 
 typedef std::pair<int, int> intPair;
@@ -19,11 +22,16 @@ template<typename T> void printElement(T t, const int& width, const char& separa
     cout << std::right << setw(width) << setfill(separator) << t;
 }
 
+/* --------------------- PRIVATE METHODS --------------------- */
+
 /**
  * METHOD: UndirectedGraph::validateGraph
  * @return if the graph is an undirected graph or not 
 */
 bool UndirectedGraph::validateGraph() {
+    if (!(this->adj.size() > 0 && this->adj.size() == this->adj[0].size()))
+        return false;
+    
     int V=this->adj.size();
     for (int i=0; i<V; ++i) 
         for (int j=i; j<V; ++j)
@@ -32,13 +40,16 @@ bool UndirectedGraph::validateGraph() {
     return true;
 }
 
+/* --------------------- PUBLIC METHODS --------------------- */
+
 /**
  * METHOD: Constructor
  * Create an instance of an adjajency matrix 
+ * @throw std::logic_error: if the given adjacency matrix is not the representation of an undirected graph
 */
 UndirectedGraph::UndirectedGraph(vector<vector<int>>* adj) : Matrix(adj) {
     // Check if the graph is actually undirected or not; if not, then delete the adjacency matrix and throw an exception
-    if (!validateGraph()) {
+    if (!this->validateGraph()) {
         throw std::logic_error("The adjajency matrix is not a representation of an undirected graph\n");
     }
     this->E /= 2;
