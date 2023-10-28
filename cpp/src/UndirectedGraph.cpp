@@ -8,6 +8,7 @@
 #include <queue>
 #include <utility>
 #include <algorithm>
+#include <memory>
 #include <iomanip>
 #include <exception>
 
@@ -60,12 +61,19 @@ UndirectedGraph::UndirectedGraph(vector<vector<int>>* adj) : Matrix(adj) {
  * Gives the shortest distance from one node to the rest of the graph using
  * Dijkstra's Algorithm
  * @param src: The source node
+ * @return The V x 3 matrix representation of the edges from performing Dijkstra's
+ * algorithm
+ * 
+ * Consider a row: {u, v, w}
+ *       w
+ * u --------> v
+ * 
+ * @throw std::out_of_range: When the given source node ID is not a valid node
 */
-void UndirectedGraph::dijkstra(int src) {
+vector<vector<int>> UndirectedGraph::dijkstra(int src) {
     // Validate the source node
     if (src < 0 || src >= this->V) {
-        cerr << "Not a valid node ID for source\n";
-        return;
+        throw std::out_of_range("The node ID does not exist in the graph.\n");
     }
     
     // Distance array; keeping track of the distance from the source node  
@@ -84,6 +92,8 @@ void UndirectedGraph::dijkstra(int src) {
     // Previous array: keeping track of what node comes before in the shortest path
     int prev[this->V];
     fill(prev, prev+this->V, Matrix::NO_EDGE);
+
+    
 
     pq.push({0, src});
     while (!pq.empty()) {
@@ -109,12 +119,17 @@ void UndirectedGraph::dijkstra(int src) {
         }
     }
 
+    vector<vector<int>> res = vector<vector<int>>();
+
     this->graphSpecs();
     cout << "Performing Dijkstra's Algorithm on the graph gives:\n";
     int idWidth = 7, distWidth = 8, prevWidth = 8;
     char seperator = ' ';
     cout << "Node ID   " << "   Distance   " << "   Previous" << '\n';
     for (int i=0; i<this->V; ++i) {
+        
+        res.push_back({ prev[i], i, dist[i] });
+        
         printElement(i, idWidth, seperator);
         cout << "      ";
         printElement(dist[i], distWidth, seperator);
@@ -123,12 +138,19 @@ void UndirectedGraph::dijkstra(int src) {
         cout << '\n';
     }
     cout << "Source: " << src << '\n';
+
+    return res;
 }
 
 /**
  * METHOD: floyd_warshall
  * Gives the tables of the shortest paths from all nodes to all other nodes
  * Based on Floyd-Warshall's Algorithm
+ * 
+ * NOTE: Because this algorithm is multiple source and multiple destination, 
+ * figuring out the weight and the distance requires 2 separate matrices, 
+ * so this method is display-only
+ * 
 */
 void UndirectedGraph::floyd_warshall() {
     // Creating a new 2D matrix copy of the graph; replacing Matrix::NO_EDGE with INT_MAX to make the algorithm work
@@ -206,13 +228,15 @@ void UndirectedGraph::floyd_warshall() {
 /**
  * METHOD: prim_algo
  * This will print out a table containing the edges needed to construct the Minimum Spanning Tree
+ * based on Prim's Algorithm
  * @param src: The source node of the MST
+ * @return All the necessary edges to construct a MST from the graph
+ * @throw std::out_of_range: When the given source node is not present in the graph
 */
-void UndirectedGraph::prim(int src) {
+vector<vector<int>> UndirectedGraph::prim(int src) {
     // Validate the source node 
     if (src < 0 || src >= this->V) {
-        cerr << "Not a valid node ID for source\n";
-        return;
+        throw std::out_of_range("The node ID does not exist in the graph.\n");
     }
     
     // Visited array; keeping track of what node has already in the tree
@@ -258,6 +282,8 @@ void UndirectedGraph::prim(int src) {
         }        
     }
 
+    vector<vector<int>> res = vector<vector<int>>();
+
     this->graphSpecs();
     int density = 0;
     cout << "Performing Prim's Algorithm on the graph gives the Minimum Spanning Tree:\n";
@@ -265,6 +291,9 @@ void UndirectedGraph::prim(int src) {
     char seperator = ' ';
     cout << "Node ID   " << "   Distance   " << "   Previous" << '\n';
     for (int i=0; i<this->V; ++i) {
+        
+        res.push_back({prev[i], i, dist[i]});
+        
         printElement(i, idWidth, seperator);
         cout << "      ";
         printElement(dist[i], distWidth, seperator);
@@ -276,17 +305,24 @@ void UndirectedGraph::prim(int src) {
     }
     cout << "Source: " << src << '\n';
     cout << "Density of MST: " << density << '\n';
+
+    return res;
 }
 
 /**
  * METHOD: kruskal
  * Gives all the edges needed to construct a Minimum Spanning Tree
  * Using Kruskal's Algorithm
+ * @return The array/vector containing all the necessary edges to construct the
+ * MST from a graph
 */
-void UndirectedGraph::kruskal() { 
-    vector<intTup> Edges = vector<intTup>();
+vector<vector<int>> UndirectedGraph::kruskal() { 
+    
+    vector<vector<int>> res = vector<vector<int>>();
     
     // Collect all the valid edges
+    vector<intTup> Edges = vector<intTup>();
+
     for (int i=0; i<this->V; ++i)
         for (int j=i+1; j<this->V; ++j)
             if (this->adj[i][j] != Matrix::NO_EDGE)
@@ -296,7 +332,7 @@ void UndirectedGraph::kruskal() {
     std::sort(Edges.begin(), Edges.end());
 
     // Initialize the disjoint set
-    DisjointSet* S = new DisjointSet(this->V);
+    std::unique_ptr<DisjointSet> S = std::make_unique<DisjointSet>(this->V);
     
     // MST Density
     int density = 0;
@@ -332,6 +368,7 @@ void UndirectedGraph::kruskal() {
         (r1 < r2) ? S->merge(src1, src2) : S->merge(src2, src1);
 
         cout << "Adding edge " << u << " -- " << v << " of weight " << w << '\n';
+        res.push_back({u, v, w});
 
         // Increment the current density of the MST
         density += w;
@@ -339,5 +376,5 @@ void UndirectedGraph::kruskal() {
 
     cout << "Density: " << density << '\n';
 
-    delete S;
+    return res;
 }

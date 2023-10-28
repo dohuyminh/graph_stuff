@@ -21,12 +21,12 @@ public:
     UndirectedGraph(std::vector<std::vector<int>>* adj);
 
     // Find the shortest path
-    void dijkstra(int src);
+    std::vector<std::vector<int>> dijkstra(int src);
     void floyd_warshall();
 
     // Find the Minimum Spanning Tree
-    void prim(int src);
-    void kruskal();
+    std::vector<std::vector<int>> prim(int src);
+    std::vector<std::vector<int>> kruskal();
 };
 
 #endif
