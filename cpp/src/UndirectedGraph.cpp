@@ -14,7 +14,7 @@
 
 /* --------------------- NAMESPACES & TEMPLATES --------------------- */
 
-using std::cout, std::cerr, std::cin, std::fill, std::setw, std::setfill, std::vector;
+using std::cout, std::fill, std::setw, std::setfill, std::vector;
 
 typedef std::pair<int, int> intPair;
 typedef std::tuple<int, int, int> intTup;
@@ -114,8 +114,8 @@ vector<vector<int>> UndirectedGraph::dijkstra(int src) {
             if (tmp < dist[v]) {
                 dist[v] = tmp;
                 prev[v] = u;
+                pq.push({dist[v], v});
             }
-            pq.push({dist[v], v});
         }
     }
 

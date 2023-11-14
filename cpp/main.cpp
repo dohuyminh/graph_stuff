@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 #include <memory>
 
@@ -7,20 +8,20 @@
 #include "include/DirectedGraph.h"
 
 int main(int argc, char** argv) {
-    
-    std::vector<std::vector<int>> matrix = {
+
+    std::vector<std::vector<int>> mat = {
         {0, 1, 3, 0}, 
         {1, 0, 1, 0}, 
         {3, 1, 0, 1}, 
         {0, 0, 1, 0}
     };
 
-    std::unique_ptr<UndirectedGraph> mat;
+    std::unique_ptr<UndirectedGraph> G;
     try {
-        mat = std::make_unique<UndirectedGraph>(&matrix);
-        std::vector<std::vector<int>> prompt = mat->kruskal();
+        G = std::make_unique<UndirectedGraph>(&mat);
+        std::vector<std::vector<int>> prompt = G->dijkstra(0);
     } catch (std::logic_error const& e) {
-        std::cerr << e.what();
+        std::cerr << e.what() << '\n';
         exit(-1);
     }
 
